@@ -2,7 +2,7 @@
 from bs4 import BeautifulSoup
 import requests
  
-URL = 'https://www.amazon.com/Noctua-redux-1700-high-Performance-Award-Winning-Affordable/dp/B07CG2PGY6/ref=sr_1_1_sspa?crid=36F410L4YBBCC&keywords=pc+fan&qid=1663710594&sprefix=pc+fa%2Caps%2C201&sr=8-1-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUFDOTBQTkc5Q004MjMmZW5jcnlwdGVkSWQ9QTA4Nzc2OTcyM1RIVTRLVkM4MjlHJmVuY3J5cHRlZEFkSWQ9QTA1OTE2MjU5UExZVDU4MFRZSUYmd2lkZ2V0TmFtZT1zcF9hdGYmYWN0aW9uPWNsaWNrUmVkaXJlY3QmZG9Ob3RMb2dDbGljaz10cnVl'
+URL = 'https://www.amazon.com/s?k=' + input("Enter product name: ")
  
 HEADERS = ({'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36', 'Accept-Language': 'en-US, en;q=0.5'})
  
@@ -10,10 +10,29 @@ webpage = requests.get(URL, headers=HEADERS)
 soup = BeautifulSoup(webpage.content, "lxml")
 
 try: 
-    title = soup.find("span", attrs={"class": 'a-offscreen'})
-    title_value = title.string
-    title_string = title_value.strip().replace(',', '')
-    print(title_string)
+    # Get all HTML product names and prices from first results page
+    all_items = soup.findAll("span", attrs={"class":"a-size-medium a-color-base a-text-normal"})
+    all_prices = soup.findAll("span", attrs={"class": 'a-offscreen'})
+
+    # Pick out each product's individual name and price from HTML
+    items = []
+    prices = []
+    for item in all_items:
+        items.append(item.string)
+
+    for price in all_prices:
+        prices.append(price.string)
+
+    # Pair product names and prices in a tuple
+    items_and_prices = [()]
+    for i in range(len(items)):
+        items_and_prices.append((items[i], prices[i]))
+        
+    # Print products and their prices
+    for item in items_and_prices:
+        result = ': '.join(item)
+        print(result + '\n')
+
 except AttributeError:
-    title_string = "NA"
-    print("Attribute could not be found")
+    items = "NA"
+    print("Item could not be found")
