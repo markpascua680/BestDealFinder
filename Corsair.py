@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Oct  6 13:49:35 2022
-
-@author: Hsnyd
-"""
-
-
 from bs4 import BeautifulSoup
 import requests
 
@@ -27,18 +19,6 @@ try:
     prices = []
     for item in all_items:
         items.append(item.string)
-
-
-
-    # Pair product names and prices in a tuple
-    items_and_prices = [()]
-    for i in range(len(items)):
-        items_and_prices.append((items[i], prices[i]))
-
-    # Print products and their prices
-    for item in items_and_prices:
-        result = ': '.join(item)
-        print(result + '\n')
 
 except AttributeError:
     items = "NA"
