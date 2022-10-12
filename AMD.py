@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Oct  6 13:11:23 2022
-
-@author: Hsnyd
-"""
-
 from bs4 import BeautifulSoup
 import requests
 
@@ -29,4 +22,3 @@ try:
 except AttributeError:
     items = "NA"
     print("Item could not be found")
-    # Pick out each product's individual name and price from HTML
