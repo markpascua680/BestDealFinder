@@ -2,8 +2,18 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def BHRequest(searchterm, numresults):
-    URL = 'https://www.bhphotovideo.com/c/search?q=' + searchterm
+def BHRequest(searchterm, numresults, filters):
+    
+    filterstring = ""
+    
+    if (filters[0] == 1) and (filters[2] == 0):
+        filterstring = "&filters=fct_a_filter_by%3A03_INSTOCK"  
+    if (filters[0] == 1) and (filters[2] == 1):
+        filterstring = "&filters=fct_a_filter_by%3A01_FREESHIP%7C03_INSTOCK"
+    if (filters[0] == 0) and (filters[2] == 1):
+        filterstring = "&filters=fct_a_filter_by%3A01_FREESHIP"  
+    
+    URL = 'https://www.bhphotovideo.com/c/search?q=' + searchterm + filterstring
      
     HEADERS = ({'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36', 'Accept-Language': 'en-US, en;q=0.5'})
      
@@ -36,5 +46,6 @@ def BHRequest(searchterm, numresults):
     
     except AttributeError:
         print("Item could not be found")
-
-BHRequest("3090", 4)
+#filter[0] = in stock, filter[1] = not used, filter[2] = free shipping, 
+filter = [1, 0, 1]
+BHRequest("3090", 4, filter)
