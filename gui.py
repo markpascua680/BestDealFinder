@@ -14,17 +14,11 @@ titleFont = ('Candara', 24)
 
 # Elements on window
 brands = ['AMD', 'Astro', 'ASUS', 'CoolerMaster', 'Corsair', 'EVGA', 'G.Skill', 'Gigabyte', 'Hyper X', 'Intel', 'Logitech', 'MSI', 'Nvidia', 'NZXT', 'Razer', 'Steelseries', '-None-']
-# accessories = ['CPU', 'Graphics Card', 'HDD', 'Keyboard', 'Motherboard', 'Mouse', 'PC Case', 'PC Fans', 'PC Headset', 'Power Supply', 'RAM', 'SSD']
 
 brandList = [
             gui.Text("Select a brand", font=font),
             gui.Combo(values=brands, size=(20, 12), enable_events=True, key='-BRAND-')
             ]
-
-# accessoryList = [
-#                 gui.Text("Select an accessory", font=font),
-#                 gui.Combo(values=accessories, size=(20, 12), enable_events=True, key='-ITEM-')
-#                 ]
 
 layout = [
          [gui.Text("Best Deal Finder", size=(width, 1), font=titleFont, justification='center')],
@@ -37,7 +31,12 @@ layout = [
                 gui.Checkbox('Newegg', font=font, default=False, key='-NEWEGG-'), 
                 gui.Checkbox('Walmart', font=font, default=False, key='-WALMART-')
                 ],
-         [gui.Text("Input search term: ", font=font), gui.InputText(key='-SEARCHTERM-')],
+         [gui.Text("Input search term: ", font=font),
+                gui.InputText(key='-SEARCHTERM-'),
+                gui.Checkbox('In Stock', font=font, default=False, key='-INSTOCK-'),
+                gui.Checkbox('New', font=font, default=False, key='-NEW-'),
+                gui.Checkbox('Free Shipping', font=font, default=False, key='-SHIPPING-'),
+                ],
          brandList,
          # accessoryList,
          [gui.Button("Submit", font=font), gui.Button("Exit", font=font)],
@@ -70,6 +69,22 @@ while True:
     # The "values" variable stores the values of user's inputs, whose keys are always indicated by hyphens on both sides of the key name e.g. -ITEM-
     event, values = window.read()
     
+    # Creates a filter list that is later passed to the functions.
+    if values['-INSTOCK-']:
+        filter = [1]
+    else:
+        filter = [0]
+    if values['-NEW-']:
+        filter.append(1)
+    else:
+        filter.append(0)
+    if values['-SHIPPING-']:
+        filter.append(1)
+    else:
+        filter.append(0)
+    
+
+    
     # Updates the -RESULTS- variable to display items
     if event == "Submit":
         # Error checks
@@ -87,43 +102,36 @@ while True:
             output = [[]]
             if values['-AMAZON-'] is True:
                 # Gather Amazon items
-                filter = [1, 1, 1]
                 output.append(AmazonRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
             
             if values['-ACER-'] is True:
-                # Gather Amazon items
-                filter = [1, 1, 1]
+                # Gather Acer items
                 output.append(AcerRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
             
             if values['-BESTBUY-'] is True:
                 # Gather BestBuy items
-                filter = [1, 1, 1]
                 output.append(BestBuyRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
             
             if values['-B&H-'] is True:
                 # Gather B&H items
-                filter = [1, 1, 1]
                 output.append(BHRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
             
             if values['-DELL-'] is True:
-                # Gather Amazon items
-                filter = [1, 1, 1]
+                # Gather Dell items
                 output.append(DellRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
             
             if values['-NEWEGG-'] is True:
-                # Gather  items
-                filter = [1, 1, 1]
+                # Gather Newegg items
                 output.append(NeweggRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
 
             if values['-WALMART-'] is True:
                 # Gather Walmart items
-                filter = [1, 1, 1]
                 output.append(WalmartRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
             

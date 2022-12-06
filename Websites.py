@@ -3,46 +3,42 @@ import requests
 
 def AcerRequest(brandname, searchterm, numresults, filters):
     URL = 'https://store.acer.com/en-us/catalogsearch/result/?q=' + brandname + searchterm
-    
-    HEADERS = ({
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US, en;q=0.5'})
-    
+    HEADERS = ({'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36', 'Accept-Language': 'en-US, en;q=0.5'})
     webpage = requests.get(URL, headers=HEADERS)
     soup = BeautifulSoup(webpage.content, "lxml")
     
     try:
         # Get all items listed in the search results
-        items = soup.findAll("li", attrs={"class":"item product product-item"})
+        items = soup.findAll("li", attrs={"class": "item product product-item"})
     
         # Find each product's name from list of search results and store it
         product_names = []
         for item in items:
-            product_names.append((item.find("a", attrs={"class":"product-item-link"})).string.replace('\n', '').lstrip().rstrip())
+            product_names.append((item.find("a", attrs={"class": "product-item-link"})).string.replace('\n', '').lstrip().rstrip())
         
-        # Check if any results are present
+        # Check if there are any search results
         if len(product_names) == 0:
-            products = ["Acer", "Your search returned no results.", "\n"]
+            products = ["Acer:", "Your search returned no results.", ""]
             return products
         
         # Find each product's price from list of search results and store it
         product_prices = []
         for i in items:
-            product_prices.append(i.find("span", attrs={"class":"price"}).string)
+            product_prices.append(i.find("span", attrs={"class": "price"}).string)
 
         # Print each product and its respective price
-        products = ['Acer']
+        products = ['Acer:']
         if (numresults <= len(items)):
             for i in range(numresults):
                 products.append(str(product_names[i]) + ': ' + str(product_prices[i]))
         else:
             for i in range(len(items)):
                 products.append(str(product_names[i]) + ': ' + str(product_prices[i]))
-        products.append("\n")
+        products.append("")
         return products
     
     except AttributeError:
-        print("error")
+        return "Acer Error"
 
 def AmazonRequest(brandname, searchterm, numresults, filters):
     filterstring = ""
@@ -68,7 +64,7 @@ def AmazonRequest(brandname, searchterm, numresults, filters):
     
     try: 
         # Get all HTML product names and prices from first results page
-        all_items = soup.findAll("span", attrs={"class":"a-size-medium a-color-base a-text-normal"})
+        all_items = soup.findAll("span", attrs={"class": "a-size-medium a-color-base a-text-normal"})
         all_prices = soup.findAll("span", attrs={"class": 'a-offscreen'})
 
         # Find and select each products price from the filtered HTML code
@@ -76,8 +72,9 @@ def AmazonRequest(brandname, searchterm, numresults, filters):
         for item in all_prices:
             prices.append(item.string)
         
-        if len(prices) == 0:
-            products = ["Amazon", "Your search returned no results.", "\n"]
+        # Check if there are any search results
+        if len(all_items) == 0:
+            products = ["Amazon:", "Your search returned no results.", ""]
             return products
         
         # Find and select each products name from the filtered HTML code
@@ -86,18 +83,18 @@ def AmazonRequest(brandname, searchterm, numresults, filters):
             names.append(item.string)
         
         # Constructs a list of products and their respective prices
-        products = ['Amazon']
+        products = ['Amazon:']
         if (numresults <= len(all_items)):
             for i in range(numresults):
                 products.append(str(names[i]) + ': ' + str(prices[i]))
         else:
             for i in range(len(all_items)):
                 products.append(str(names[i]) + ': ' + str(prices[i]))
-        products.append("\n")
+        products.append("")
         return products
     
     except AttributeError:
-        print("Item could not be found on Amazon.")
+        return "Amazon Error"
 
 def BestBuyRequest(brandname, searchterm, numresults, filters):
     
@@ -115,8 +112,9 @@ def BestBuyRequest(brandname, searchterm, numresults, filters):
     soup = BeautifulSoup(webpage.content, "lxml")
     
     try:
+        # Check if there are any search results
         if (soup.find('div', attrs={"class": "no-results-copy"})):
-            products = ["BestBuy", "Your search returned no results.", "\n"]
+            products = ["BestBuy:", "Your search returned no results.", ""]
             return products
         
         # Filter down HTML code for later find functions.
@@ -134,7 +132,7 @@ def BestBuyRequest(brandname, searchterm, numresults, filters):
             names.append(item.find('h4', attrs={"class": "sku-title"}).find('a').string)
         
         # Prints products and their respective prices
-        products = ['BestBuy']
+        products = ['BestBuy:']
         if (numresults <= len(all_prices)):
             for i in range(numresults):
                 products.append(str(names[i]) + ': ' + str(prices[i]))
@@ -145,7 +143,7 @@ def BestBuyRequest(brandname, searchterm, numresults, filters):
         return products
     
     except AttributeError:
-        print("error")
+        return "BestBuy Error"
 
 def BHRequest(brandname, searchterm, numresults, filters):
     
@@ -159,9 +157,7 @@ def BHRequest(brandname, searchterm, numresults, filters):
         filterstring = "&filters=fct_a_filter_by%3A01_FREESHIP"  
     
     URL = 'https://www.bhphotovideo.com/c/search?q=' + brandname + searchterm + filterstring
-     
     HEADERS = ({'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36', 'Accept-Language': 'en-US, en;q=0.5'})
-     
     webpage = requests.get(URL, headers=HEADERS)
     soup = BeautifulSoup(webpage.content, "lxml")
     
@@ -170,9 +166,9 @@ def BHRequest(brandname, searchterm, numresults, filters):
         all_prices = soup.findAll("span", attrs={"data-selenium":"uppedDecimalPrice"})
         all_names = soup.findAll("span", attrs={"data-selenium":"miniProductPageProductName"})
         
-        # Checks if any results are present.
+        # Check if there are any search results
         if ((len(all_names) and len(all_prices)) == 0):
-            products = ["BH", "Your search returned no results.", "\n"]
+            products = ["BH:", "Your search returned no results.", ""]
             return products
             
         # Find and select each products price in dollars and cents and then join them together to form the whole price.
@@ -183,62 +179,59 @@ def BHRequest(brandname, searchterm, numresults, filters):
             price_whole.append(curr_dollar + "." + curr_cent)
             
         # Prints products and their respective prices'
-        products = ['B&H']
+        products = ['B&H:']
         if (numresults <= len(all_prices)):
             for i in range(numresults):
                 products.append(str(all_names[i].string) + ': ' + str(price_whole[i]))
         else:
             for i in range(len(all_prices)):
                 products.append(str(all_names[i].string) + ': ' + str(price_whole[i]))
-        products.append("\n")
+        products.append("")
         return products
     
     except AttributeError:
-        print("Item could not be found")
+        return "B&H Error"
 
 def DellRequest(brandname, searchterm, numresults, filters):
     URL = 'https://www.dell.com/en-us/search/' + brandname + searchterm
-    
-    HEADERS = ({
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/'
-                      '105.0.0.0 Safari/537.36', 'Accept-Language': 'en-US, en;q=0.5'})
-    
+    HEADERS = ({'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36', 'Accept-Language': 'en-US, en;q=0.5'})
     webpage = requests.get(URL, headers=HEADERS)
     soup = BeautifulSoup(webpage.content, "lxml")
     
     try:
-        # Check if any results are present
-        if soup.find('div', class_='zero-results-page'):
-            products = ["Dell", "Your search returned no results."]
-            return products
+
     
         # Get all items listed in the search results
-        items = soup.findAll('article', class_='stack-system ps-stack')
+        items = soup.findAll('article', attrs={'class':'stack-system ps-stack'})
     
         # Find each product's name from list of search results and store it
         product_names = []
         for i in items:
-            product_names.append(i.find('h3', class_='ps-title').text.replace('\n', '').lstrip().rstrip())
-    
+            product_names.append(i.find('h3', attrs={'class': 'ps-title'}).text.replace('\n', '').lstrip().rstrip())
+        
+        # Check if there are any search results
+        if len(items) == 0:
+            products = ["Dell:", "Your search returned no results.", ""]
+            return products
+        
         # Find each product's price from list of search results and store it
         product_prices = []
         for i in items:
-            product_prices.append(i.find('div', class_='ps-dell-price ps-simplified').text.replace('\n', '')
-                                  .replace('Dell Price', '').lstrip().rstrip())
+            product_prices.append(i.find('div', attrs={'class': 'ps-dell-price ps-simplified'}).text.replace('\n', '').replace('Dell Price', '').lstrip().rstrip())
     
         # Print each product and its respective price
-        products = ['Dell']
+        products = ['Dell:']
         if (numresults <= len(items)):
             for i in range(numresults):
                 products.append(str(product_names[i]) + ': ' + str(product_prices[i]))
         else:
             for i in range(len(items)):
                 products.append(str(product_names[i]) + ': ' + str(product_prices[i]))
-        products.append("\n")
+        products.append("")
         return products
     
     except AttributeError:
-        print("error")
+        return "Dell Error"
 
 def NeweggRequest(brandname, searchterm, numresults, filters):
     filterstring = ""
@@ -267,9 +260,9 @@ def NeweggRequest(brandname, searchterm, numresults, filters):
     soup = BeautifulSoup(webpage.content, "lxml")
     
     try:
-        # Checks if any results are present.
+        # Check if there are any search results
         if (soup.find('span', attrs={"class", "result-message-error"})):
-            products = ["Newegg", "Your search returned no results.", "\n"]
+            products = ["Newegg:", "Your search returned no results.", ""]
             return products
         
         # Gets all HTML prices and product names from the first results page
@@ -291,7 +284,7 @@ def NeweggRequest(brandname, searchterm, numresults, filters):
                 price_whole.append(curr_dollar + curr_cent)
             
         # Prints products and their respective prices
-        products = ['Newegg']
+        products = ['Newegg:']
         numresults += 1
         if (numresults <= len(all_prices)):
             for i in range(1, numresults):
@@ -299,11 +292,11 @@ def NeweggRequest(brandname, searchterm, numresults, filters):
         else:
             for i in range(1, (len(all_prices)-2)):
                 products.append(str(all_names[i].string) + ': $' + str(price_whole[i]))
-        products.append("\n")
+        products.append("")
         return products
     
     except AttributeError:
-        print("Item could not be found")
+        return "Newegg Error"
 
 def WalmartRequest(brandname, searchterm, numresults, filters):
     
@@ -324,9 +317,9 @@ def WalmartRequest(brandname, searchterm, numresults, filters):
         all_prices = soup.findAll("div", attrs={"data-automation-id":"product-price"})
         all_names = soup.findAll("span", attrs={"data-automation-id":"product-title"})
 
-        # Checks if any results are present.
+        # Check if there are any search results
         if len(all_names) == 0:
-            products = ["Walmart", "Your search returned no results.", "\n"]
+            products = ["Walmart:", "Your search returned no results.", ""]
             return products
         
         # Find and select each product price from the filtered HTML code. Remove any unnecessary words from filtered results.
@@ -350,7 +343,7 @@ def WalmartRequest(brandname, searchterm, numresults, filters):
             names.append(item.string)
             
         # Constructs a list of products and their respective prices
-        products = ['Walmart']
+        products = ['Walmart:']
         
         if (numresults <= len(all_prices)):
             for i in range(numresults):
@@ -364,8 +357,8 @@ def WalmartRequest(brandname, searchterm, numresults, filters):
             for i in range(10):
                 tempval = str(names[i].string)+ ': ' + str(prices[i])
                 products.append(tempval)
-        products.append("\n")
+        products.append("")
         return products
     
     except AttributeError:
-        print("Item could not be found")
+        return "Walmart Error"
