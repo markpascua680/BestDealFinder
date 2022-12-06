@@ -5,8 +5,8 @@ from Websites import *
 gui.theme('DarkGrey6')
 
 # Window specifications
-width = 1024
-height = 768
+width = 1920
+height = 1080
 
 font = ('Candara', 12)  # Font name, font size
 titleFont = ('Candara', 24)
@@ -92,14 +92,14 @@ while True:
             
             if values['-ACER-'] is True:
                 # Gather Amazon items
-                # filter = [1, 1, 1]
-                # print(AcerRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                filter = [1, 1, 1]
+                output.append(AcerRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
             
             if values['-BESTBUY-'] is True:
                 # Gather BestBuy items
-                # filter = [1, 1, 1]
-                # print(BestBuyRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                filter = [1, 1, 1]
+                output.append(BestBuyRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
                 pass
             
             if values['-B&H-'] is True:
@@ -128,15 +128,7 @@ while True:
             
             for item in output:
                 for product in item:
-                    # If item name is too long
-                    if len(product) > 100:
-                        results += product[:100] + '\n'
-                        results += '\t' + product[100:] + '\n'
-                    else:
-                        results += product + '\n'
-
-                    print(product + '\n')
-                print('\n')
+                    results += product + '\n'
 
             window['-RESULTS-'].update(results)
             
