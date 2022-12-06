@@ -46,6 +46,24 @@ layout = [
 # Create window
 window = gui.Window("Best Deal Finder", layout, size=(width, height))
 
+def websiteChecked():
+    if (    
+            values['-AMAZON-'] == False and
+            values['-ACER-'] == False and
+            values['-BESTBUY-'] == False and
+            values['-B&H-'] == False and
+            values['-DELL-'] == False and
+            values['-NEWEGG-'] == False and
+            values['-WALMART-'] == False    
+       ):
+        return False
+    return True
+
+def itemEntered():
+    if values['-SEARCHTERM-'] == "":
+        return False
+    return True
+
 # Event loop
 while True:
     # The "values" variable stores the values of user's inputs, whose keys are always indicated by hyphens on both sides of the key name e.g. -ITEM-
@@ -53,55 +71,74 @@ while True:
     
     # Updates the -RESULTS- variable to display items
     if event == "Submit":
-        # Scrape from websites
-        window['-RESULTS-'].update('Searching...')
-        output = [[]]
-        if values['-AMAZON-'] is True:
-            # Gather Amazon items
-            filter = [1, 1, 1]
-            output.append(AmazonRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
-            pass
-        
-        if values['-ACER-'] is True:
-            # Gather Amazon items
-            # filter = [1, 1, 1]
-            # print(AcerRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
-            pass
-        
-        if values['-BESTBUY-'] is True:
-            # Gather BestBuy items
-            # filter = [1, 1, 1]
-            # print(BestBuyRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
-            pass
-        
-        if values['-B&H-'] is True:
-            # Gather B&H items
-            filter = [1, 1, 1]
-            output.append(BHRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
-            pass
-        
-        if values['-DELL-'] is True:
-            # Gather Amazon items
-            filter = [1, 1, 1]
-            output.append(DellRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
-            pass
-        
-        if values['-NEWEGG-'] is True:
-            # Gather  items
-            filter = [1, 1, 1]
-            output.append(NeweggRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
-            pass
+        # Error checks
+        # Check if at least one website box was checked
+        if not websiteChecked():
+           window['-RESULTS-'].update("Please select at least one website to search")
+        # Check if an item was entered in search field
+        elif not itemEntered():
+           window['-RESULTS-'].update("Please enter an item")
 
-        if values['-WALMART-'] is True:
-            # Gather Walmart items
-            filter = [1, 1, 1]
-            output.append(WalmartRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
-            pass
-        
-        for item in output:
-            for product in item:
-                print(product + '\n')
-            print('\n')
+        # Scrape from websites
+        else:
+            window['-RESULTS-'].update('Searching...')
+            results = ""
+            output = [[]]
+            if values['-AMAZON-'] is True:
+                # Gather Amazon items
+                filter = [1, 1, 1]
+                output.append(AmazonRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                pass
+            
+            if values['-ACER-'] is True:
+                # Gather Amazon items
+                # filter = [1, 1, 1]
+                # print(AcerRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                pass
+            
+            if values['-BESTBUY-'] is True:
+                # Gather BestBuy items
+                # filter = [1, 1, 1]
+                # print(BestBuyRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                pass
+            
+            if values['-B&H-'] is True:
+                # Gather B&H items
+                filter = [1, 1, 1]
+                output.append(BHRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                pass
+            
+            if values['-DELL-'] is True:
+                # Gather Amazon items
+                filter = [1, 1, 1]
+                output.append(DellRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                pass
+            
+            if values['-NEWEGG-'] is True:
+                # Gather  items
+                filter = [1, 1, 1]
+                output.append(NeweggRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                pass
+
+            if values['-WALMART-'] is True:
+                # Gather Walmart items
+                filter = [1, 1, 1]
+                output.append(WalmartRequest(str(values['-BRAND-']), str(values['-SEARCHTERM-']), 4, filter))
+                pass
+            
+            for item in output:
+                for product in item:
+                    # If item name is too long
+                    if len(product) > 100:
+                        results += product[:100] + '\n'
+                        results += '\t' + product[100:] + '\n'
+                    else:
+                        results += product + '\n'
+
+                    print(product + '\n')
+                print('\n')
+
+            window['-RESULTS-'].update(results)
             
     # Close window if Exit button is clicked
     if event == "Exit" or event == gui.WIN_CLOSED:
