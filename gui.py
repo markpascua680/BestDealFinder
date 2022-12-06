@@ -1,12 +1,13 @@
 import PySimpleGUI as gui
+from win32api import GetSystemMetrics
 from Websites import *
 
 # GUI color theme
 gui.theme('DarkGrey6')
 
 # Window specifications
-width = 1920
-height = 1080
+width = GetSystemMetrics(0)
+height = GetSystemMetrics(1)
 
 font = ('Candara', 12)  # Font name, font size
 titleFont = ('Candara', 24)
